@@ -24,7 +24,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import dev.forcetower.fullfacepoc.databinding.FragmentCaptureBinding
+import dev.forcetower.fullfacepoc.databinding.FragmentVideoCaptureBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -36,8 +36,8 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 @SuppressLint("RestrictedApi")
-class CaptureFragment : Fragment() {
-    private lateinit var binding: FragmentCaptureBinding
+class VideoCaptureFragment : Fragment() {
+    private lateinit var binding: FragmentVideoCaptureBinding
     private lateinit var videoCapture: VideoCapture
 
     private var recordingStartMillis: Long = 0L
@@ -48,17 +48,12 @@ class CaptureFragment : Fragment() {
         else Toast.makeText(requireContext(), "Você precisa dar todas as permissões...", Toast.LENGTH_LONG).show()
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Timber.plant(Timber.DebugTree())
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return FragmentCaptureBinding.inflate(inflater, container, false).also {
+        return FragmentVideoCaptureBinding.inflate(inflater, container, false).also {
             binding = it
         }.root
     }

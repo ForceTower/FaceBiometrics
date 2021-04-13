@@ -2,10 +2,15 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fullface_graph.xml"
-    app:startDestination="@id/capture">
+    app:startDestination="@id/image">
 
     <fragment
-        android:id="@+id/capture"
-        android:name="dev.forcetower.fullfacepoc.CaptureFragment"
+        android:id="@+id/image"
+        android:name="dev.forcetower.fullfacepoc.ImageCaptureFragment"
+        android:label="CaptureFragment" />
+
+    <fragment
+        android:id="@+id/video"
+        android:name="dev.forcetower.fullfacepoc.VideoCaptureFragment"
         android:label="CaptureFragment" />
 </navigation>
