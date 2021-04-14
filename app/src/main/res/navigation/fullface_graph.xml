@@ -6,11 +6,11 @@
 
     <fragment
         android:id="@+id/image"
-        android:name="dev.forcetower.fullfacepoc.ImageCaptureFragment"
+        android:name="dev.forcetower.fullfacepoc.fragment.ImageCaptureFragment"
         android:label="CaptureFragment" />
 
     <fragment
         android:id="@+id/video"
-        android:name="dev.forcetower.fullfacepoc.VideoCaptureFragment"
+        android:name="dev.forcetower.fullfacepoc.fragment.VideoCaptureFragment"
         android:label="CaptureFragment" />
 </navigation>

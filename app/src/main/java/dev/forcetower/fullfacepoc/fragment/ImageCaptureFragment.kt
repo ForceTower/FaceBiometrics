@@ -1,12 +1,10 @@
-package dev.forcetower.fullfacepoc
+package dev.forcetower.fullfacepoc.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.ContentValues
+import android.content.pm.ActivityInfo
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Size
 import android.view.LayoutInflater
 import android.view.View
@@ -14,18 +12,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
-import androidx.camera.core.ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import dev.forcetower.fullfacepoc.databinding.FragmentImageCaptureBinding
+import dev.forcetower.fullfacepoc.detection.FaceContourDetectionProcessor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
+import java.util.concurrent.Executors
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -33,7 +33,7 @@ import kotlin.coroutines.resumeWithException
 class ImageCaptureFragment : Fragment() {
     private lateinit var binding: FragmentImageCaptureBinding
     private lateinit var imageCapture: ImageCapture
-//    private lateinit var imageAnalysis: ImageAnalysis
+    private lateinit var imageAnalysis: ImageAnalysis
 
     private var cameraInitialized = false
 
@@ -98,32 +98,43 @@ class ImageCaptureFragment : Fragment() {
             val selector = CameraSelector.DEFAULT_FRONT_CAMERA
 
             imageCapture = ImageCapture.Builder()
-                .setCaptureMode(CAPTURE_MODE_MINIMIZE_LATENCY)
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                 .setMaxResolution(Size(640, 480))
                 .setDefaultResolution(Size(640, 480))
                 .build()
 
-//            imageAnalysis = ImageAnalysis.Builder()
-//                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-//                .build()
+            imageAnalysis = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also {
+                    it.setAnalyzer(Executors.newSingleThreadExecutor(), FaceContourDetectionProcessor(binding.overlay))
+                }
 
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(viewLifecycleOwner, selector, preview, imageCapture)
+            cameraProvider.bindToLifecycle(viewLifecycleOwner, selector, preview, imageCapture, imageAnalysis)
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
-    private fun startCapture() = lifecycleScope.launch(Dispatchers.IO) {
-        val f1 = captureImage()
-        delay(400L)
-        val f2 = captureImage()
-        delay(400L)
-        val f3 = captureImage()
-        delay(400L)
-        val f4 = captureImage()
-        delay(400L)
-        val f5 = captureImage()
-        delay(400L)
-        val f6 = captureImage()
+    private fun startCapture() = lifecycleScope.launch {
+        binding.timer.text = "Espere..."
+        binding.btnStartCapture.visibility = View.INVISIBLE
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
+        withContext(Dispatchers.IO) {
+            val f1 = captureImage()
+            delay(400L)
+            val f2 = captureImage()
+            delay(400L)
+            val f3 = captureImage()
+            delay(400L)
+            val f4 = captureImage()
+            delay(400L)
+            val f5 = captureImage()
+            delay(400L)
+            val f6 = captureImage()
+        }
+        binding.btnStartCapture.visibility = View.VISIBLE
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        binding.timer.text = ""
     }
 
     private suspend fun captureImage() = suspendCancellableCoroutine<Uri> { continuation ->

@@ -1,8 +1,7 @@
-package dev.forcetower.fullfacepoc
+package dev.forcetower.fullfacepoc.fragment
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever

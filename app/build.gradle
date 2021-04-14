@@ -65,6 +65,8 @@ dependencies {
 
     implementation "com.jakewharton.timber:timber:4.7.1"
 
+    implementation 'com.google.android.gms:play-services-mlkit-face-detection:16.1.5'
+
 
     implementation "androidx.navigation:navigation-ui-ktx:$navigation"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
