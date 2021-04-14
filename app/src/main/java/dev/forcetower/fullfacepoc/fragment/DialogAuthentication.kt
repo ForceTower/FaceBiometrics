@@ -18,15 +18,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
 import androidx.exifinterface.media.ExifInterface
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
-import dev.forcetower.fullfacepoc.databinding.FragmentImageCaptureBinding
+import dev.forcetower.fullfacepoc.databinding.DialogBiometricsAuthBinding
 import dev.forcetower.fullfacepoc.detection.FaceContourDetectionProcessor
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -35,24 +31,13 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 @SuppressLint("RestrictedApi")
-class ImageCaptureFragment : Fragment() {
-    private lateinit var binding: FragmentImageCaptureBinding
+class DialogAuthentication : DialogFragment() {
+    private lateinit var binding: DialogBiometricsAuthBinding
     private lateinit var imageCapture: ImageCapture
     private lateinit var imageAnalysis: ImageAnalysis
 
-    private var cameraInitialized = false
-
     private val requestInitialPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
         if (granted.all { it.value }) initializeCamera()
-        else Toast.makeText(
-            requireContext(),
-            "Você precisa dar todas as permissões...",
-            Toast.LENGTH_LONG
-        ).show()
-    }
-
-    private val requestSecondaryPermissions = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { granted ->
-        if (granted.all { it.value }) startCapture()
         else Toast.makeText(
             requireContext(),
             "Você precisa dar todas as permissões...",
@@ -65,15 +50,15 @@ class ImageCaptureFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return FragmentImageCaptureBinding.inflate(inflater, container, false).also {
+        return DialogBiometricsAuthBinding.inflate(inflater, container, false).also {
             binding = it
         }.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnStartCapture.setOnClickListener {
-            requestSecondaryPermissions.launch(arrayOf(Manifest.permission.CAMERA))
+        binding.btnAuth.setOnClickListener {
+            startCapture()
         }
     }
 
@@ -83,9 +68,7 @@ class ImageCaptureFragment : Fragment() {
     }
 
     private fun initializeCamera() {
-        if (cameraInitialized) return
         configureCamera()
-        cameraInitialized = true
     }
 
     private fun configureCamera() {
@@ -119,13 +102,13 @@ class ImageCaptureFragment : Fragment() {
                 }
 
             cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(viewLifecycleOwner, selector, preview, imageCapture)
+            cameraProvider.bindToLifecycle(viewLifecycleOwner, selector, preview, imageCapture, imageAnalysis)
         }, ContextCompat.getMainExecutor(requireContext()))
     }
 
     private fun startCapture() = lifecycleScope.launch {
-        binding.timer.text = "Espere..."
-        binding.btnStartCapture.visibility = View.INVISIBLE
+        binding.btnAuth.visibility = View.INVISIBLE
+        binding.timer.visibility = View.VISIBLE
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LOCKED
         val pictures = withContext(Dispatchers.IO) {
             val f1 = captureImage()
@@ -174,10 +157,9 @@ class ImageCaptureFragment : Fragment() {
             Timber.d(it)
         }
 
-        binding.btnStartCapture.visibility = View.VISIBLE
+        binding.btnAuth.visibility = View.VISIBLE
+        binding.timer.visibility = View.GONE
         requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-        binding.timer.text = ""
-
     }
 
     private fun flipHorizontal(bitmap: Bitmap): Bitmap {

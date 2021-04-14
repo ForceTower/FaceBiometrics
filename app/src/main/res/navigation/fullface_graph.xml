@@ -2,7 +2,12 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fullface_graph.xml"
-    app:startDestination="@id/image">
+    app:startDestination="@id/single">
+
+    <fragment
+        android:id="@+id/single"
+        android:name="dev.forcetower.fullfacepoc.fragment.SingleFragment"
+        android:label="CaptureFragment" />
 
     <fragment
         android:id="@+id/image"

@@ -59,7 +59,6 @@ class FaceContourDetectionProcessor(private val view: GraphicOverlay) : ImageAna
         graphicOverlay: GraphicOverlay,
         rect: Rect
     ) {
-        Timber.d("Success. Detected ${results.size} faces")
         graphicOverlay.clear()
         results.forEach {
             val faceGraphic = FaceContourGraphic(graphicOverlay, it, rect)
