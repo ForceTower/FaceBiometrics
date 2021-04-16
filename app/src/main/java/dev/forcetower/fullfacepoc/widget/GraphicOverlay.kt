@@ -10,9 +10,7 @@ import android.view.View
 import androidx.camera.core.CameraSelector
 import kotlin.math.ceil
 
-open class GraphicOverlay(context: Context?, attrs: AttributeSet?) :
-    View(context, attrs) {
-
+open class GraphicOverlay(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
     private val lock = Any()
     private val graphics: MutableList<Graphic> = ArrayList()
     var mScale: Float? = null

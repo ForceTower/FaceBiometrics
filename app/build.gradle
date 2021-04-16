@@ -67,6 +67,11 @@ dependencies {
 
     implementation 'com.google.android.gms:play-services-mlkit-face-detection:16.1.5'
 
+    implementation "com.squareup.okhttp3:okhttp:$okhttp"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttp"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+
 
     implementation "androidx.navigation:navigation-ui-ktx:$navigation"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation"
